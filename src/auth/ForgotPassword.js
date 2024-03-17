@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setEmail(e.target.value);
@@ -13,15 +15,17 @@ const ForgotPassword = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:8000/auth/forgot-password",
+        "http://localhost:8000/auth/forgotPassword",
         { email }
       );
       setMessage(response.data.message);
+      const { resetToken } = response.data;
+      navigate(`/resetPassword?token=${resetToken}`);
     } catch (error) {
-      console.error("Error resetting password:", error);
+      console.error("Error sending reset email:", error.response.data.message);
+      setMessage(error.response.data.message);
     }
   };
-
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
